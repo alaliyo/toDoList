@@ -21,6 +21,7 @@ function App() {
 
     // toDoList에 추가할 객체
     const toDoObj = {
+      id: Date.now(),
       title: toDo,
       date: reductionDate(new Date()), // 날짜 포맷 변경 유틸 사용
     };
@@ -31,8 +32,8 @@ function App() {
   };
 
   // 삭제 버튼 클릭시 toDoList data 삭제 실행할 함수
-  const onDel = (index) => {
-    setToDoList(toDoList.filter((_, i) => i !== index));
+  const onDel = (id) => {
+    setToDoList((prevList) => prevList.filter((item) => item.id !== id));
   };
 
   // toDoList 상태값이 변경될 때마다 localStorage에 저장
@@ -58,11 +59,11 @@ function App() {
         <ToDoStyle>
           {toDoList.length > 0 ? (
             toDoList.map((item, i) => (
-              <li key={i}>
+              <li key={item.id}>
                 <div>{i + 1}. {item.title}</div>
                 <div>
                   <span>{item.date}</span>
-                  <button onClick={() => onDel(i)}>x</button>
+                  <button onClick={() => onDel(item.id)}>x</button>
                 </div>
               </li>
             ))) : (
