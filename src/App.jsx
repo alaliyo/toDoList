@@ -4,34 +4,45 @@ import GlobalStyle from "./style/globalStyle";
 import { reductionDate } from './util/dataFormat';
 
 function App() {
+  // input 값 상태관리
   const [toDo, setToDo] = useState('');
+  // toDoList 상태관리
   const [toDoList, setToDoList] = useState(() => {
     const savedList = localStorage.getItem('toDoList');
     return savedList ? JSON.parse(savedList) : [];
   });
 
-  useEffect(() => {
-    localStorage.setItem('toDoList', JSON.stringify(toDoList));
-  }, [toDoList]);
-
+  // onSubmit시 input 초기화 및 toDoList data 변경 실행할 함수
   const onSubmitHandler = (e) => {
     e.preventDefault();
+
+    // 입력값이 없을 경우 return
     if (toDo.trim() === '') return;
+
+    // toDoList에 추가할 객체
     const toDoObj = {
       title: toDo,
-      date: reductionDate(new Date()),
+      date: reductionDate(new Date()), // 날짜 포맷 변경 유틸 사용
     };
 
+    // 상태관리 값 변경
     setToDoList([toDoObj, ...toDoList]);
     setToDo('');
   };
 
+  // 삭제 버튼 클릭시 toDoList data 삭제 실행할 함수
   const onDel = (index) => {
     setToDoList(toDoList.filter((_, i) => i !== index));
   };
 
+  // toDoList 상태값이 변경될 때마다 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('toDoList', JSON.stringify(toDoList));
+  }, [toDoList]);
+
   return (
     <Layout>
+      {/* styled-components 사용해 전역 스타일 만든 함수 호출 */}
       <GlobalStyle />
       <h1>ToDoList</h1>
       <ToDoBox>
@@ -43,24 +54,22 @@ function App() {
           />
           <button type="submit">저장</button>
         </form>
-
         
-          <ToDoStyle>
-            {toDoList.length > 0 ? (
-              toDoList.map((item, i) => (
-                <li key={i}>
-                  <div>{i + 1}. {item.title}</div>
-                  <div>
-                    <span>{item.date}</span>
-                    <button onClick={() => onDel(i)}>x</button>
-                  </div>
-                </li>
-              ))) : (
-                <li>저장한 내용이 없습니다.</li>
-              )
-            }
-          </ToDoStyle>
-       
+        <ToDoStyle>
+          {toDoList.length > 0 ? (
+            toDoList.map((item, i) => (
+              <li key={i}>
+                <div>{i + 1}. {item.title}</div>
+                <div>
+                  <span>{item.date}</span>
+                  <button onClick={() => onDel(i)}>x</button>
+                </div>
+              </li>
+            ))) : (
+              <li>저장한 내용이 없습니다.</li>
+            )
+          }
+        </ToDoStyle>
       </ToDoBox>
     </Layout>
   );
@@ -68,6 +77,7 @@ function App() {
 
 export default App;
 
+// 스타일 컴포넌트
 const Layout = styled.div`
   height: 100vh;
   padding-top: 160px;
